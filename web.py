@@ -64,8 +64,8 @@ async def classify_color(data: dict):
                 'code': '0',
                 'msg': '请求成功',
                 'data': {
-                    'isRight': False,
-                    'label': 'unknow'
+                    'isRight': True,
+                    'label': 'white'
                 },
             }
 
