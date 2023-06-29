@@ -78,8 +78,8 @@ if __name__ == '__main__':
     # for crop,conf in finder.crops(image):
     #     crop.save(f'./crop_{time.time()}_{conf}.jpg')
     from pathlib import Path
-    forder = Path('/home/mole/projects/python/yolo/balls')
-    finder = BallFinder('/home/mole/projects/python/yolo/best.pt')
+    forder = Path('/home/mole/projects/python/yolo/SS_CombDet/datasets')
+    finder = BallFinder('/home/mole/projects/python/yolo/SS_CombDet/ball_finder.pt')
     count = 0
     for file in forder.iterdir():
         if file.name.endswith('.jpg'):

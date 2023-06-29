@@ -61,55 +61,6 @@ class CustomDataset(Dataset):
             image = self.transform(image)
         return image, label
 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# net = SimpleCNN().to(device)
-# if Path('color_classifier.pt').exists():
-#     state_dict = torch.load('color_classifier.pt')
-#     net.load_state_dict(state_dict=state_dict)
-
-# dataset = CustomDataset(Path('/home/mole/projects/python/yolo/balls/crops'))
-# dataloader = DataLoader(dataset, batch_size=8, shuffle=True, pin_memory=True)
-
-# criterion = nn.CrossEntropyLoss()
-# optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-
-# try:
-# # 训练网络
-#     for epoch in range(10):
-#         running_loss = 0.0
-#         for i, data in enumerate(dataloader, 0):
-#             inputs, labels = data
-#             inputs = inputs.to(device)
-#             labels = labels.to(device)
-#             optimizer.zero_grad()
-#             outputs = net(inputs)
-#             loss = criterion(outputs, labels)
-#             loss.backward()
-#             optimizer.step()
-
-#             running_loss += loss.item()
-
-#         print(f"Epoch {epoch + 1}, Loss: {running_loss / len(dataloader)}")
-# except KeyboardInterrupt:
-#     print('stop train')
-# finally:
-#     torch.save(net.state_dict(), Path('./color_classifier.pt'))
-
-# print("Finished Training")
-
-
-# def classify_color(image_path, model, transform, device):
-#     image = Image.open(image_path)
-#     image = transform(image).unsqueeze(0).to(device)  # 移动数据到同样的设备
-#     output = model(image)
-#     print(output)
-#     _, predicted = torch.max(output, 1)
-#     return predicted.item()
-
-# # 示例：
-# new_image_path = "/home/mole/projects/python/yolo/balls/crops/0621200001_K13_6492daf31caf140050759937_15_36568b_blue#1_blue_25_blue.jpg"
-# predicted_color = classify_color(new_image_path, net, CustomDataset.transform, device)
-# print(f"Predicted color category: {color_index[predicted_color]}")
 
 class ColorClassifier:
     device: torch.device
@@ -119,7 +70,7 @@ class ColorClassifier:
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net = SimpleCNN().to(self.device)
         if Path(model_path).exists(): 
-            state_dict = torch.load(model_path)
+            state_dict = torch.load(model_path, map_location=self.device)
             self.net.load_state_dict(state_dict=state_dict)
         else:
             raise FileNotFoundError('model not found')
@@ -130,3 +81,54 @@ class ColorClassifier:
         _, predicted = torch.max(output, 1)
         index:int = predicted.item() 
         return color_index[index]
+    
+if __name__ == '__main__':
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    net = SimpleCNN().to(device)
+    if Path('color_classifier.pt').exists():
+        state_dict = torch.load('color_classifier.pt')
+        net.load_state_dict(state_dict=state_dict)
+
+    dataset = CustomDataset(Path('/home/mole/projects/python/yolo/SS_CombDet/datasets/crops'))
+    dataloader = DataLoader(dataset, batch_size=8, shuffle=True, pin_memory=True)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+
+    try:
+    # 训练网络
+        for epoch in range(10):
+            running_loss = 0.0
+            for i, data in enumerate(dataloader, 0):
+                inputs, labels = data
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+                optimizer.zero_grad()
+                outputs = net(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+
+                running_loss += loss.item()
+
+            print(f"Epoch {epoch + 1}, Loss: {running_loss / len(dataloader)}")
+    except KeyboardInterrupt:
+        print('stop train')
+    finally:
+        torch.save(net.state_dict(), Path('./color_classifier.pt'))
+
+    print("Finished Training")
+
+
+    def classify_color(image_path, model, transform, device):
+        image = Image.open(image_path)
+        image = transform(image).unsqueeze(0).to(device)  # 移动数据到同样的设备
+        output = model(image)
+        print(output)
+        _, predicted = torch.max(output, 1)
+        return predicted.item()
+
+    # 示例：
+    new_image_path = "/home/mole/projects/python/yolo/balls/crops/0621200001_K13_6492daf31caf140050759937_15_36568b_blue#1_blue_25_blue.jpg"
+    predicted_color = classify_color(new_image_path, net, CustomDataset.transform, device)
+    print(f"Predicted color category: {color_index[predicted_color]}")
