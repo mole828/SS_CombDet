@@ -12,6 +12,9 @@ class CombineModel:
         self._finder = BallFinder()
         self._classifier = ColorClassifier()
     
+    def find(self, image: Image.Image):
+        return [self._classifier.classify(im) for im,_,_ in self._finder.crops(image)]
+
     def draw(self, image: Image.Image) -> Image.Image:
         newimage = image.copy()
         draw = ImageDraw.Draw(newimage)
