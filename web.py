@@ -70,7 +70,7 @@ async def handle_color_ml(request: ColorRequest):
         print(error)
         raise HTTPException(status_code=500)
     finally:
-        print(f"physicId: {request.physicId}, number: {request.number}, color: {color}")
+        print(f"onePieceTaskRecordId: {request.onePieceTaskRecordId}, physicId: {request.physicId}, number: {request.number}, color: {color}")
 
 if __name__ == '__main__':
     import uvicorn
