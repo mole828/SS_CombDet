@@ -43,10 +43,7 @@ async def classify_color(data: dict):
     try:
         # Convert base64 image to a PIL Image
         image_base64 = data['image']
-        onePieceTaskRecordId: data['gameId']
-        number= data['step']
-        physicId= data['physicId']
-        print(physicId, onePieceTaskRecordId, number)
+        print(f"data: {data}")
         image_data = base64.b64decode(image_base64)
         image = Image.open(io.BytesIO(image_data)).convert("RGB")
         
