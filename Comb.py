@@ -20,7 +20,7 @@ class CombineModel:
         draw = ImageDraw.Draw(newimage)
         for im,conf,space in self._finder.crops(image):
             color = self._classifier.classify(im)
-            BallFinder.draw_once(draw, space, color)
+            BallFinder.draw_once(draw, space, f" {color}:{conf}")
         return newimage
     
     def process_rtmp_stream(self, rtmp_url):

@@ -54,10 +54,15 @@ async def handle_color_ml(request: ColorRequest):
         image_data = base64.b64decode(image_base64)
         image = Image.open(io.BytesIO(image_data)).convert("RGB")
         colors = model.find(image)
-        if len(colors) != 1:
-            color = 'white'
-        else:
-            color = colors[0]
+        
+        match len(colors):
+            case 0:
+                color = 'white'
+            case 1:
+                color = colors[0]
+            case _:
+                raise ValueError(f"More than one ball in camera, len(colors): {len(colors)}")
+        
         return JSONResponse(status_code=200, content={
             "code": "0",
             "msg": "请求成功",
