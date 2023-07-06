@@ -61,7 +61,7 @@ async def handle_color_ml(request: ColorRequest):
             case 1:
                 color = colors[0]
             case _:
-                raise ValueError(f"More than one ball in camera, len(colors): {len(colors)}")
+                color = 'multiple'
         
         return JSONResponse(status_code=200, content={
             "code": "0",
